@@ -12,15 +12,31 @@ const PORT = process.env.PORT || 5174;
 app.use(cors());              
 app.use(express.json());
 
-(async () => {
-  try {
-    await connectDB();
-  } catch (err) {
-    console.error("Failed to connect to DB:", err);
-    process.exit(1);
-  }
-})();
+// (async () => {
+//   try {
+//     await connectDB();
+//   } catch (err) {
+//     console.error("Failed to connect to DB:", err);
+//     process.exit(1);
+//   }
+// })();
 
+\import mongoose from "mongoose";
+
+/**
+ * Connect to MongoDB using process.env.MONGO_URL.
+ * Throws on error so callers can handle exit/retry.
+ */
+export async function connectDB() {
+  try {
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("Mongo connected");
+  } catch (err) {
+    console.error("Connection error:", err.message);
+    throw err;
+  }
+}
+connectDB()
 // api/songs (Read all songs)
 app.get("/api/songs", async (_req, res) => {
     const rows = await Song.find().sort({ createdAt: -1 });
